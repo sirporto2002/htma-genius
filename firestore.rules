@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ================
+    // USERS COLLECTION
+    // ================
+    match /users/{userId} {
+      // Each user can read/update their own profile
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+
+      // Allow user creation (signup)
+      allow create: if request.auth != null;
+      
+      // Only admins can delete users
+      allow delete: if request.auth != null && request.auth.token.role == "admin";
+    }
+
+    // =================
+    // REPORTS COLLECTION
+    // =================
+    match /reports/{reportId} {
+      allow read, write: if request.auth != null && (
+        // Owner access (each user can read/write their own reports)
+        request.auth.uid == request.resource.data.userId ||
+
+        // Practitioner access: can read reports for all clients
+        (request.auth.token.role == "practitioner" && request.method == "get") ||
+
+        // Admins: full access
+        request.auth.token.role == "admin"
+      );
+    }
+
+    // ====================
+    // OTHER COLLECTIONS...
+    // ====================
+    match /{document=**} {
+      // Deny everything else by default
+      allow read, write: if false;
+    }
+  }
+}
