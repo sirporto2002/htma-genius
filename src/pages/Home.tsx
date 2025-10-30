@@ -1,8 +1,8 @@
 export default function Home() {
   return (
-    <main style={{ padding: 16 }}>
-      <h1>Home Page</h1>
-      <p>Welcome to HTMA Genius!</p>
-    </main>
+    <section>
+      <h1>Welcome to HTMA Genius</h1>
+      <p>Your mineral analysis dashboard.</p>
+    </section>
   );
 }

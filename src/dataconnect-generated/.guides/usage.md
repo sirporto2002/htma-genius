@@ -12,16 +12,16 @@ For each operation, there is a wrapper hook that can be used to call the operati
 
 Here are all of the hooks that get generated:
 ```ts
-import { useCreateNewUser, useGetPublicLists, useAddMovieToList, useGetMoviesFromList } from '@dataconnect/generated/react';
+import { useCreateClientProfile, useGetHtmaReport, useUpdateMineralReading, useListUsers } from '@dataconnect/generated/react';
 // The types of these hooks are available in react/index.d.ts
 
-const { data, isPending, isSuccess, isError, error } = useCreateNewUser(createNewUserVars);
+const { data, isPending, isSuccess, isError, error } = useCreateClientProfile(createClientProfileVars);
 
-const { data, isPending, isSuccess, isError, error } = useGetPublicLists();
+const { data, isPending, isSuccess, isError, error } = useGetHtmaReport(getHtmaReportVars);
 
-const { data, isPending, isSuccess, isError, error } = useAddMovieToList(addMovieToListVars);
+const { data, isPending, isSuccess, isError, error } = useUpdateMineralReading(updateMineralReadingVars);
 
-const { data, isPending, isSuccess, isError, error } = useGetMoviesFromList(getMoviesFromListVars);
+const { data, isPending, isSuccess, isError, error } = useListUsers();
 
 ```
 
@@ -60,20 +60,20 @@ If a user is not using a supported framework, they can use the generated SDK dir
 Here's an example of how to use it with the first 5 operations:
 
 ```js
-import { createNewUser, getPublicLists, addMovieToList, getMoviesFromList } from '@dataconnect/generated';
+import { createClientProfile, getHtmaReport, updateMineralReading, listUsers } from '@dataconnect/generated';
 
 
-// Operation CreateNewUser:  For variables, look at type CreateNewUserVars in ../index.d.ts
-const { data } = await CreateNewUser(dataConnect, createNewUserVars);
+// Operation CreateClientProfile:  For variables, look at type CreateClientProfileVars in ../index.d.ts
+const { data } = await CreateClientProfile(dataConnect, createClientProfileVars);
 
-// Operation GetPublicLists: 
-const { data } = await GetPublicLists(dataConnect);
+// Operation GetHTMAReport:  For variables, look at type GetHtmaReportVars in ../index.d.ts
+const { data } = await GetHtmaReport(dataConnect, getHtmaReportVars);
 
-// Operation AddMovieToList:  For variables, look at type AddMovieToListVars in ../index.d.ts
-const { data } = await AddMovieToList(dataConnect, addMovieToListVars);
+// Operation UpdateMineralReading:  For variables, look at type UpdateMineralReadingVars in ../index.d.ts
+const { data } = await UpdateMineralReading(dataConnect, updateMineralReadingVars);
 
-// Operation GetMoviesFromList:  For variables, look at type GetMoviesFromListVars in ../index.d.ts
-const { data } = await GetMoviesFromList(dataConnect, getMoviesFromListVars);
+// Operation ListUsers: 
+const { data } = await ListUsers(dataConnect);
 
 
 ```

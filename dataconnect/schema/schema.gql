@@ -1,49 +1,103 @@
+"""
+HTMA Genius - Firebase Data Connect GraphQL Schema
+Author: SirPorto
+Database: PostgreSQL (us-central1)
+"""
+
+"""
+The main user table.
+Stores authentication-related and profile details.
+"""
 type User @table {
-  displayName: String!
-  createdAt: Timestamp!
-  email: String
-  photoUrl: String
-}
-
-type Movie @table {
-  title: String!
-  year: Int!
-  createdAt: Timestamp!
-  summary: String
-  genres: [String]
-  runtime: Int
-}
-
-type Watch @table {
-  user: User!
-  movie: Movie!
-  createdAt: Timestamp!
-  watchDate: Date!
-  location: String
-}
-
-type Review @table {
-  movie: Movie!
-  user: User!
-  watch: Watch!
-  rating: Int!
-  createdAt: Timestamp!
-  updatedAt: Timestamp!
-  review: String
-}
-
-type List @table {
-  user: User!
+  id: ID! @primaryKey
   name: String!
-  public: Boolean!
-  createdAt: Timestamp!
-  updatedAt: Timestamp!
-  description: String
+  email: String! @unique
+  phone: String
+  role: String! @default(value: "client") # client, admin, practitioner
+  createdAt: DateTime! @default(value: NOW)
+  updatedAt: DateTime! @updatedAt
+  reports: [HTMAReport] @hasMany(field: "userId")
 }
 
-type ListMovie @table(key: ["list", "movie"]) {
-  list: List!
-  movie: Movie!
-  position: Int!
-  note: String
+"""
+Stores each HTMA report uploaded or generated for a user.
+"""
+type HTMAReport @table {
+  id: ID! @primaryKey
+  userId: ID! @foreignKey(table: "User", field: "id")
+  reportName: String!
+  reportDate: DateTime! @default(value: NOW)
+  status: String! @default(value: "pending") # pending, analyzed, completed
+  notes: String
+  createdAt: DateTime! @default(value: NOW)
+  updatedAt: DateTime! @updatedAt
+
+  # Relationships
+  user: User @belongsTo(field: "userId")
+  minerals: [MineralResult] @hasMany(field: "reportId")
+  ratios: [MineralRatio] @hasMany(field: "reportId")
+  recommendations: [Recommendation] @hasMany(field: "reportId")
+  logs: [AnalysisLog] @hasMany(field: "reportId")
+}
+
+"""
+Stores individual mineral readings per HTMA report.
+"""
+type MineralResult @table {
+  id: ID! @primaryKey
+  reportId: ID! @foreignKey(table: "HTMAReport", field: "id")
+  mineralName: String!
+  value: Float!
+  unit: String! @default(value: "mg%")
+  referenceRangeLow: Float
+  referenceRangeHigh: Float
+  interpretation: String
+
+  createdAt: DateTime! @default(value: NOW)
+  report: HTMAReport @belongsTo(field: "reportId")
+}
+
+"""
+Stores mineral ratio data per HTMA report.
+"""
+type MineralRatio @table {
+  id: ID! @primaryKey
+  reportId: ID! @foreignKey(table: "HTMAReport", field: "id")
+  ratioName: String!
+  value: Float!
+  ideal: Float
+  deviation: Float
+  status: String # e.g., High / Low / Normal
+
+  createdAt: DateTime! @default(value: NOW)
+  report: HTMAReport @belongsTo(field: "reportId")
+}
+
+"""
+Stores practitioner recommendations generated for a report.
+"""
+type Recommendation @table {
+  id: ID! @primaryKey
+  reportId: ID! @foreignKey(table: "HTMAReport", field: "id")
+  title: String!
+  description: String!
+  category: String # e.g., "Diet", "Supplements", "Lifestyle"
+  priority: String @default(value: "normal") # low, normal, high
+
+  createdAt: DateTime! @default(value: NOW)
+  report: HTMAReport @belongsTo(field: "reportId")
+}
+
+"""
+Stores log history of actions taken during report analysis.
+"""
+type AnalysisLog @table {
+  id: ID! @primaryKey
+  reportId: ID! @foreignKey(table: "HTMAReport", field: "id")
+  action: String!
+  performedBy: String
+  timestamp: DateTime! @default(value: NOW)
+  notes: String
+
+  report: HTMAReport @belongsTo(field: "reportId")
 }

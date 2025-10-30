@@ -10,11 +10,11 @@ This README will guide you through the process of using the generated JavaScript
 - [**Accessing the connector**](#accessing-the-connector)
   - [*Connecting to the local Emulator*](#connecting-to-the-local-emulator)
 - [**Queries**](#queries)
-  - [*GetPublicLists*](#getpubliclists)
-  - [*GetMoviesFromList*](#getmoviesfromlist)
+  - [*GetHTMAReport*](#gethtmareport)
+  - [*ListUsers*](#listusers)
 - [**Mutations**](#mutations)
-  - [*CreateNewUser*](#createnewuser)
-  - [*AddMovieToList*](#addmovietolist)
+  - [*CreateClientProfile*](#createclientprofile)
+  - [*UpdateMineralReading*](#updatemineralreading)
 
 # Accessing the connector
 A connector is a collection of Queries and Mutations. One SDK is generated for each connector - this SDK is generated for the connector `example`. You can find more information about connectors in the [Data Connect documentation](https://firebase.google.com/docs/data-connect#how-does).
@@ -61,219 +61,228 @@ The following is true for both the action shortcut function and the `QueryRef` f
 
 Below are examples of how to use the `example` connector's generated functions to execute each query. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#using-queries).
 
-## GetPublicLists
-You can execute the `GetPublicLists` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## GetHTMAReport
+You can execute the `GetHTMAReport` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-getPublicLists(): QueryPromise<GetPublicListsData, undefined>;
+getHtmaReport(vars: GetHtmaReportVariables): QueryPromise<GetHtmaReportData, GetHtmaReportVariables>;
 
-interface GetPublicListsRef {
+interface GetHtmaReportRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (): QueryRef<GetPublicListsData, undefined>;
+  (vars: GetHtmaReportVariables): QueryRef<GetHtmaReportData, GetHtmaReportVariables>;
 }
-export const getPublicListsRef: GetPublicListsRef;
+export const getHtmaReportRef: GetHtmaReportRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
 ```typescript
-getPublicLists(dc: DataConnect): QueryPromise<GetPublicListsData, undefined>;
+getHtmaReport(dc: DataConnect, vars: GetHtmaReportVariables): QueryPromise<GetHtmaReportData, GetHtmaReportVariables>;
 
-interface GetPublicListsRef {
+interface GetHtmaReportRef {
   ...
-  (dc: DataConnect): QueryRef<GetPublicListsData, undefined>;
+  (dc: DataConnect, vars: GetHtmaReportVariables): QueryRef<GetHtmaReportData, GetHtmaReportVariables>;
 }
-export const getPublicListsRef: GetPublicListsRef;
+export const getHtmaReportRef: GetHtmaReportRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getPublicListsRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getHtmaReportRef:
 ```typescript
-const name = getPublicListsRef.operationName;
+const name = getHtmaReportRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `GetPublicLists` query has no variables.
-### Return Type
-Recall that executing the `GetPublicLists` query returns a `QueryPromise` that resolves to an object with a `data` property.
+The `GetHTMAReport` query requires an argument of type `GetHtmaReportVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
-The `data` property is an object of type `GetPublicListsData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface GetPublicListsData {
-  lists: ({
+export interface GetHtmaReportVariables {
+  id: UUIDString;
+}
+```
+### Return Type
+Recall that executing the `GetHTMAReport` query returns a `QueryPromise` that resolves to an object with a `data` property.
+
+The `data` property is an object of type `GetHtmaReportData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+```typescript
+export interface GetHtmaReportData {
+  hTMAReport?: {
     id: UUIDString;
-    name: string;
-    description?: string | null;
-    user: {
+    clientProfile: {
       id: UUIDString;
-      displayName: string;
-    } & User_Key;
-  } & List_Key)[];
+      name: string;
+    } & ClientProfile_Key;
+      createdAt: TimestampString;
+      notes?: string | null;
+      testDate: DateString;
+      mineralRatios_on_htmaReport: ({
+        id: UUIDString;
+        ratioName: string;
+        value: number;
+      } & MineralRatio_Key)[];
+        mineralReadings_on_htmaReport: ({
+          id: UUIDString;
+          mineralName: string;
+          level: number;
+          unit?: string | null;
+        } & MineralReading_Key)[];
+  } & HTMAReport_Key;
 }
 ```
-### Using `GetPublicLists`'s action shortcut function
+### Using `GetHTMAReport`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getPublicLists } from '@dataconnect/generated';
+import { connectorConfig, getHtmaReport, GetHtmaReportVariables } from '@dataconnect/generated';
 
+// The `GetHTMAReport` query requires an argument of type `GetHtmaReportVariables`:
+const getHtmaReportVars: GetHtmaReportVariables = {
+  id: ..., 
+};
 
-// Call the `getPublicLists()` function to execute the query.
+// Call the `getHtmaReport()` function to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getPublicLists();
+const { data } = await getHtmaReport(getHtmaReportVars);
+// Variables can be defined inline as well.
+const { data } = await getHtmaReport({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getPublicLists(dataConnect);
+const { data } = await getHtmaReport(dataConnect, getHtmaReportVars);
 
-console.log(data.lists);
+console.log(data.hTMAReport);
 
 // Or, you can use the `Promise` API.
-getPublicLists().then((response) => {
+getHtmaReport(getHtmaReportVars).then((response) => {
   const data = response.data;
-  console.log(data.lists);
+  console.log(data.hTMAReport);
 });
 ```
 
-### Using `GetPublicLists`'s `QueryRef` function
+### Using `GetHTMAReport`'s `QueryRef` function
 
 ```typescript
 import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getPublicListsRef } from '@dataconnect/generated';
+import { connectorConfig, getHtmaReportRef, GetHtmaReportVariables } from '@dataconnect/generated';
 
+// The `GetHTMAReport` query requires an argument of type `GetHtmaReportVariables`:
+const getHtmaReportVars: GetHtmaReportVariables = {
+  id: ..., 
+};
 
-// Call the `getPublicListsRef()` function to get a reference to the query.
-const ref = getPublicListsRef();
+// Call the `getHtmaReportRef()` function to get a reference to the query.
+const ref = getHtmaReportRef(getHtmaReportVars);
+// Variables can be defined inline as well.
+const ref = getHtmaReportRef({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the `QueryRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = getPublicListsRef(dataConnect);
+const ref = getHtmaReportRef(dataConnect, getHtmaReportVars);
 
 // Call `executeQuery()` on the reference to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeQuery(ref);
 
-console.log(data.lists);
+console.log(data.hTMAReport);
 
 // Or, you can use the `Promise` API.
 executeQuery(ref).then((response) => {
   const data = response.data;
-  console.log(data.lists);
+  console.log(data.hTMAReport);
 });
 ```
 
-## GetMoviesFromList
-You can execute the `GetMoviesFromList` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## ListUsers
+You can execute the `ListUsers` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-getMoviesFromList(vars: GetMoviesFromListVariables): QueryPromise<GetMoviesFromListData, GetMoviesFromListVariables>;
+listUsers(): QueryPromise<ListUsersData, undefined>;
 
-interface GetMoviesFromListRef {
+interface ListUsersRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetMoviesFromListVariables): QueryRef<GetMoviesFromListData, GetMoviesFromListVariables>;
+  (): QueryRef<ListUsersData, undefined>;
 }
-export const getMoviesFromListRef: GetMoviesFromListRef;
+export const listUsersRef: ListUsersRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
 ```typescript
-getMoviesFromList(dc: DataConnect, vars: GetMoviesFromListVariables): QueryPromise<GetMoviesFromListData, GetMoviesFromListVariables>;
+listUsers(dc: DataConnect): QueryPromise<ListUsersData, undefined>;
 
-interface GetMoviesFromListRef {
+interface ListUsersRef {
   ...
-  (dc: DataConnect, vars: GetMoviesFromListVariables): QueryRef<GetMoviesFromListData, GetMoviesFromListVariables>;
+  (dc: DataConnect): QueryRef<ListUsersData, undefined>;
 }
-export const getMoviesFromListRef: GetMoviesFromListRef;
+export const listUsersRef: ListUsersRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getMoviesFromListRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the listUsersRef:
 ```typescript
-const name = getMoviesFromListRef.operationName;
+const name = listUsersRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `GetMoviesFromList` query requires an argument of type `GetMoviesFromListVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-
-```typescript
-export interface GetMoviesFromListVariables {
-  listId: UUIDString;
-}
-```
+The `ListUsers` query has no variables.
 ### Return Type
-Recall that executing the `GetMoviesFromList` query returns a `QueryPromise` that resolves to an object with a `data` property.
+Recall that executing the `ListUsers` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `GetMoviesFromListData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `ListUsersData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface GetMoviesFromListData {
-  list?: {
-    name: string;
-    movies_via_ListMovie: ({
-      id: UUIDString;
-      title: string;
-      year: number;
-      summary?: string | null;
-    } & Movie_Key)[];
-  };
+export interface ListUsersData {
+  users: ({
+    id: UUIDString;
+    displayName: string;
+    email: string;
+    photoUrl?: string | null;
+  } & User_Key)[];
 }
 ```
-### Using `GetMoviesFromList`'s action shortcut function
+### Using `ListUsers`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getMoviesFromList, GetMoviesFromListVariables } from '@dataconnect/generated';
+import { connectorConfig, listUsers } from '@dataconnect/generated';
 
-// The `GetMoviesFromList` query requires an argument of type `GetMoviesFromListVariables`:
-const getMoviesFromListVars: GetMoviesFromListVariables = {
-  listId: ..., 
-};
 
-// Call the `getMoviesFromList()` function to execute the query.
+// Call the `listUsers()` function to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getMoviesFromList(getMoviesFromListVars);
-// Variables can be defined inline as well.
-const { data } = await getMoviesFromList({ listId: ..., });
+const { data } = await listUsers();
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getMoviesFromList(dataConnect, getMoviesFromListVars);
+const { data } = await listUsers(dataConnect);
 
-console.log(data.list);
+console.log(data.users);
 
 // Or, you can use the `Promise` API.
-getMoviesFromList(getMoviesFromListVars).then((response) => {
+listUsers().then((response) => {
   const data = response.data;
-  console.log(data.list);
+  console.log(data.users);
 });
 ```
 
-### Using `GetMoviesFromList`'s `QueryRef` function
+### Using `ListUsers`'s `QueryRef` function
 
 ```typescript
 import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getMoviesFromListRef, GetMoviesFromListVariables } from '@dataconnect/generated';
+import { connectorConfig, listUsersRef } from '@dataconnect/generated';
 
-// The `GetMoviesFromList` query requires an argument of type `GetMoviesFromListVariables`:
-const getMoviesFromListVars: GetMoviesFromListVariables = {
-  listId: ..., 
-};
 
-// Call the `getMoviesFromListRef()` function to get a reference to the query.
-const ref = getMoviesFromListRef(getMoviesFromListVars);
-// Variables can be defined inline as well.
-const ref = getMoviesFromListRef({ listId: ..., });
+// Call the `listUsersRef()` function to get a reference to the query.
+const ref = listUsersRef();
 
 // You can also pass in a `DataConnect` instance to the `QueryRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = getMoviesFromListRef(dataConnect, getMoviesFromListVars);
+const ref = listUsersRef(dataConnect);
 
 // Call `executeQuery()` on the reference to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeQuery(ref);
 
-console.log(data.list);
+console.log(data.users);
 
 // Or, you can use the `Promise` API.
 executeQuery(ref).then((response) => {
   const data = response.data;
-  console.log(data.list);
+  console.log(data.users);
 });
 ```
 
@@ -292,236 +301,236 @@ The following is true for both the action shortcut function and the `MutationRef
 
 Below are examples of how to use the `example` connector's generated functions to execute each mutation. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#using-mutations).
 
-## CreateNewUser
-You can execute the `CreateNewUser` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## CreateClientProfile
+You can execute the `CreateClientProfile` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-createNewUser(vars: CreateNewUserVariables): MutationPromise<CreateNewUserData, CreateNewUserVariables>;
+createClientProfile(vars: CreateClientProfileVariables): MutationPromise<CreateClientProfileData, CreateClientProfileVariables>;
 
-interface CreateNewUserRef {
+interface CreateClientProfileRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: CreateNewUserVariables): MutationRef<CreateNewUserData, CreateNewUserVariables>;
+  (vars: CreateClientProfileVariables): MutationRef<CreateClientProfileData, CreateClientProfileVariables>;
 }
-export const createNewUserRef: CreateNewUserRef;
+export const createClientProfileRef: CreateClientProfileRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
 ```typescript
-createNewUser(dc: DataConnect, vars: CreateNewUserVariables): MutationPromise<CreateNewUserData, CreateNewUserVariables>;
+createClientProfile(dc: DataConnect, vars: CreateClientProfileVariables): MutationPromise<CreateClientProfileData, CreateClientProfileVariables>;
 
-interface CreateNewUserRef {
+interface CreateClientProfileRef {
   ...
-  (dc: DataConnect, vars: CreateNewUserVariables): MutationRef<CreateNewUserData, CreateNewUserVariables>;
+  (dc: DataConnect, vars: CreateClientProfileVariables): MutationRef<CreateClientProfileData, CreateClientProfileVariables>;
 }
-export const createNewUserRef: CreateNewUserRef;
+export const createClientProfileRef: CreateClientProfileRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the createNewUserRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the createClientProfileRef:
 ```typescript
-const name = createNewUserRef.operationName;
+const name = createClientProfileRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `CreateNewUser` mutation requires an argument of type `CreateNewUserVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `CreateClientProfile` mutation requires an argument of type `CreateClientProfileVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface CreateNewUserVariables {
-  displayName: string;
-  email?: string | null;
-  photoUrl?: string | null;
+export interface CreateClientProfileVariables {
+  userId: UUIDString;
+  name: string;
+  createdAt: TimestampString;
+  dateOfBirth?: DateString | null;
+  gender?: string | null;
 }
 ```
 ### Return Type
-Recall that executing the `CreateNewUser` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+Recall that executing the `CreateClientProfile` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `CreateNewUserData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `CreateClientProfileData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface CreateNewUserData {
-  user_insert: User_Key;
+export interface CreateClientProfileData {
+  clientProfile_insert: ClientProfile_Key;
 }
 ```
-### Using `CreateNewUser`'s action shortcut function
+### Using `CreateClientProfile`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, createNewUser, CreateNewUserVariables } from '@dataconnect/generated';
+import { connectorConfig, createClientProfile, CreateClientProfileVariables } from '@dataconnect/generated';
 
-// The `CreateNewUser` mutation requires an argument of type `CreateNewUserVariables`:
-const createNewUserVars: CreateNewUserVariables = {
-  displayName: ..., 
-  email: ..., // optional
-  photoUrl: ..., // optional
+// The `CreateClientProfile` mutation requires an argument of type `CreateClientProfileVariables`:
+const createClientProfileVars: CreateClientProfileVariables = {
+  userId: ..., 
+  name: ..., 
+  createdAt: ..., 
+  dateOfBirth: ..., // optional
+  gender: ..., // optional
 };
 
-// Call the `createNewUser()` function to execute the mutation.
+// Call the `createClientProfile()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await createNewUser(createNewUserVars);
+const { data } = await createClientProfile(createClientProfileVars);
 // Variables can be defined inline as well.
-const { data } = await createNewUser({ displayName: ..., email: ..., photoUrl: ..., });
+const { data } = await createClientProfile({ userId: ..., name: ..., createdAt: ..., dateOfBirth: ..., gender: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await createNewUser(dataConnect, createNewUserVars);
+const { data } = await createClientProfile(dataConnect, createClientProfileVars);
 
-console.log(data.user_insert);
+console.log(data.clientProfile_insert);
 
 // Or, you can use the `Promise` API.
-createNewUser(createNewUserVars).then((response) => {
+createClientProfile(createClientProfileVars).then((response) => {
   const data = response.data;
-  console.log(data.user_insert);
+  console.log(data.clientProfile_insert);
 });
 ```
 
-### Using `CreateNewUser`'s `MutationRef` function
+### Using `CreateClientProfile`'s `MutationRef` function
 
 ```typescript
 import { getDataConnect, executeMutation } from 'firebase/data-connect';
-import { connectorConfig, createNewUserRef, CreateNewUserVariables } from '@dataconnect/generated';
+import { connectorConfig, createClientProfileRef, CreateClientProfileVariables } from '@dataconnect/generated';
 
-// The `CreateNewUser` mutation requires an argument of type `CreateNewUserVariables`:
-const createNewUserVars: CreateNewUserVariables = {
-  displayName: ..., 
-  email: ..., // optional
-  photoUrl: ..., // optional
+// The `CreateClientProfile` mutation requires an argument of type `CreateClientProfileVariables`:
+const createClientProfileVars: CreateClientProfileVariables = {
+  userId: ..., 
+  name: ..., 
+  createdAt: ..., 
+  dateOfBirth: ..., // optional
+  gender: ..., // optional
 };
 
-// Call the `createNewUserRef()` function to get a reference to the mutation.
-const ref = createNewUserRef(createNewUserVars);
+// Call the `createClientProfileRef()` function to get a reference to the mutation.
+const ref = createClientProfileRef(createClientProfileVars);
 // Variables can be defined inline as well.
-const ref = createNewUserRef({ displayName: ..., email: ..., photoUrl: ..., });
+const ref = createClientProfileRef({ userId: ..., name: ..., createdAt: ..., dateOfBirth: ..., gender: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = createNewUserRef(dataConnect, createNewUserVars);
+const ref = createClientProfileRef(dataConnect, createClientProfileVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeMutation(ref);
 
-console.log(data.user_insert);
+console.log(data.clientProfile_insert);
 
 // Or, you can use the `Promise` API.
 executeMutation(ref).then((response) => {
   const data = response.data;
-  console.log(data.user_insert);
+  console.log(data.clientProfile_insert);
 });
 ```
 
-## AddMovieToList
-You can execute the `AddMovieToList` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## UpdateMineralReading
+You can execute the `UpdateMineralReading` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-addMovieToList(vars: AddMovieToListVariables): MutationPromise<AddMovieToListData, AddMovieToListVariables>;
+updateMineralReading(vars: UpdateMineralReadingVariables): MutationPromise<UpdateMineralReadingData, UpdateMineralReadingVariables>;
 
-interface AddMovieToListRef {
+interface UpdateMineralReadingRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: AddMovieToListVariables): MutationRef<AddMovieToListData, AddMovieToListVariables>;
+  (vars: UpdateMineralReadingVariables): MutationRef<UpdateMineralReadingData, UpdateMineralReadingVariables>;
 }
-export const addMovieToListRef: AddMovieToListRef;
+export const updateMineralReadingRef: UpdateMineralReadingRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
 ```typescript
-addMovieToList(dc: DataConnect, vars: AddMovieToListVariables): MutationPromise<AddMovieToListData, AddMovieToListVariables>;
+updateMineralReading(dc: DataConnect, vars: UpdateMineralReadingVariables): MutationPromise<UpdateMineralReadingData, UpdateMineralReadingVariables>;
 
-interface AddMovieToListRef {
+interface UpdateMineralReadingRef {
   ...
-  (dc: DataConnect, vars: AddMovieToListVariables): MutationRef<AddMovieToListData, AddMovieToListVariables>;
+  (dc: DataConnect, vars: UpdateMineralReadingVariables): MutationRef<UpdateMineralReadingData, UpdateMineralReadingVariables>;
 }
-export const addMovieToListRef: AddMovieToListRef;
+export const updateMineralReadingRef: UpdateMineralReadingRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the addMovieToListRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the updateMineralReadingRef:
 ```typescript
-const name = addMovieToListRef.operationName;
+const name = updateMineralReadingRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `AddMovieToList` mutation requires an argument of type `AddMovieToListVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `UpdateMineralReading` mutation requires an argument of type `UpdateMineralReadingVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface AddMovieToListVariables {
-  listId: UUIDString;
-  movieId: UUIDString;
-  note?: string | null;
-  position: number;
+export interface UpdateMineralReadingVariables {
+  id: UUIDString;
+  level?: number | null;
 }
 ```
 ### Return Type
-Recall that executing the `AddMovieToList` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+Recall that executing the `UpdateMineralReading` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `AddMovieToListData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `UpdateMineralReadingData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface AddMovieToListData {
-  listMovie_insert: ListMovie_Key;
+export interface UpdateMineralReadingData {
+  mineralReading_update?: MineralReading_Key | null;
 }
 ```
-### Using `AddMovieToList`'s action shortcut function
+### Using `UpdateMineralReading`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, addMovieToList, AddMovieToListVariables } from '@dataconnect/generated';
+import { connectorConfig, updateMineralReading, UpdateMineralReadingVariables } from '@dataconnect/generated';
 
-// The `AddMovieToList` mutation requires an argument of type `AddMovieToListVariables`:
-const addMovieToListVars: AddMovieToListVariables = {
-  listId: ..., 
-  movieId: ..., 
-  note: ..., // optional
-  position: ..., 
+// The `UpdateMineralReading` mutation requires an argument of type `UpdateMineralReadingVariables`:
+const updateMineralReadingVars: UpdateMineralReadingVariables = {
+  id: ..., 
+  level: ..., // optional
 };
 
-// Call the `addMovieToList()` function to execute the mutation.
+// Call the `updateMineralReading()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await addMovieToList(addMovieToListVars);
+const { data } = await updateMineralReading(updateMineralReadingVars);
 // Variables can be defined inline as well.
-const { data } = await addMovieToList({ listId: ..., movieId: ..., note: ..., position: ..., });
+const { data } = await updateMineralReading({ id: ..., level: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await addMovieToList(dataConnect, addMovieToListVars);
+const { data } = await updateMineralReading(dataConnect, updateMineralReadingVars);
 
-console.log(data.listMovie_insert);
+console.log(data.mineralReading_update);
 
 // Or, you can use the `Promise` API.
-addMovieToList(addMovieToListVars).then((response) => {
+updateMineralReading(updateMineralReadingVars).then((response) => {
   const data = response.data;
-  console.log(data.listMovie_insert);
+  console.log(data.mineralReading_update);
 });
 ```
 
-### Using `AddMovieToList`'s `MutationRef` function
+### Using `UpdateMineralReading`'s `MutationRef` function
 
 ```typescript
 import { getDataConnect, executeMutation } from 'firebase/data-connect';
-import { connectorConfig, addMovieToListRef, AddMovieToListVariables } from '@dataconnect/generated';
+import { connectorConfig, updateMineralReadingRef, UpdateMineralReadingVariables } from '@dataconnect/generated';
 
-// The `AddMovieToList` mutation requires an argument of type `AddMovieToListVariables`:
-const addMovieToListVars: AddMovieToListVariables = {
-  listId: ..., 
-  movieId: ..., 
-  note: ..., // optional
-  position: ..., 
+// The `UpdateMineralReading` mutation requires an argument of type `UpdateMineralReadingVariables`:
+const updateMineralReadingVars: UpdateMineralReadingVariables = {
+  id: ..., 
+  level: ..., // optional
 };
 
-// Call the `addMovieToListRef()` function to get a reference to the mutation.
-const ref = addMovieToListRef(addMovieToListVars);
+// Call the `updateMineralReadingRef()` function to get a reference to the mutation.
+const ref = updateMineralReadingRef(updateMineralReadingVars);
 // Variables can be defined inline as well.
-const ref = addMovieToListRef({ listId: ..., movieId: ..., note: ..., position: ..., });
+const ref = updateMineralReadingRef({ id: ..., level: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = addMovieToListRef(dataConnect, addMovieToListVars);
+const ref = updateMineralReadingRef(dataConnect, updateMineralReadingVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeMutation(ref);
 
-console.log(data.listMovie_insert);
+console.log(data.mineralReading_update);
 
 // Or, you can use the `Promise` API.
 executeMutation(ref).then((response) => {
   const data = response.data;
-  console.log(data.listMovie_insert);
+  console.log(data.mineralReading_update);
 });
 ```
 

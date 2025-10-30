@@ -2,51 +2,51 @@ import { queryRef, executeQuery, mutationRef, executeMutation, validateArgs } fr
 
 export const connectorConfig = {
   connector: 'example',
-  service: 'htma-genius',
+  service: 'htma-genius-1',
   location: 'us-central1'
 };
 
-export const createNewUserRef = (dcOrVars, vars) => {
+export const createClientProfileRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'CreateNewUser', inputVars);
+  return mutationRef(dcInstance, 'CreateClientProfile', inputVars);
 }
-createNewUserRef.operationName = 'CreateNewUser';
+createClientProfileRef.operationName = 'CreateClientProfile';
 
-export function createNewUser(dcOrVars, vars) {
-  return executeMutation(createNewUserRef(dcOrVars, vars));
+export function createClientProfile(dcOrVars, vars) {
+  return executeMutation(createClientProfileRef(dcOrVars, vars));
 }
 
-export const getPublicListsRef = (dc) => {
+export const getHtmaReportRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'GetHTMAReport', inputVars);
+}
+getHtmaReportRef.operationName = 'GetHTMAReport';
+
+export function getHtmaReport(dcOrVars, vars) {
+  return executeQuery(getHtmaReportRef(dcOrVars, vars));
+}
+
+export const updateMineralReadingRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return mutationRef(dcInstance, 'UpdateMineralReading', inputVars);
+}
+updateMineralReadingRef.operationName = 'UpdateMineralReading';
+
+export function updateMineralReading(dcOrVars, vars) {
+  return executeMutation(updateMineralReadingRef(dcOrVars, vars));
+}
+
+export const listUsersRef = (dc) => {
   const { dc: dcInstance} = validateArgs(connectorConfig, dc, undefined);
   dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetPublicLists');
+  return queryRef(dcInstance, 'ListUsers');
 }
-getPublicListsRef.operationName = 'GetPublicLists';
+listUsersRef.operationName = 'ListUsers';
 
-export function getPublicLists(dc) {
-  return executeQuery(getPublicListsRef(dc));
-}
-
-export const addMovieToListRef = (dcOrVars, vars) => {
-  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
-  dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'AddMovieToList', inputVars);
-}
-addMovieToListRef.operationName = 'AddMovieToList';
-
-export function addMovieToList(dcOrVars, vars) {
-  return executeMutation(addMovieToListRef(dcOrVars, vars));
-}
-
-export const getMoviesFromListRef = (dcOrVars, vars) => {
-  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
-  dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetMoviesFromList', inputVars);
-}
-getMoviesFromListRef.operationName = 'GetMoviesFromList';
-
-export function getMoviesFromList(dcOrVars, vars) {
-  return executeQuery(getMoviesFromListRef(dcOrVars, vars));
+export function listUsers(dc) {
+  return executeQuery(listUsersRef(dc));
 }
 

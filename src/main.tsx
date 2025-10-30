@@ -1,22 +1,18 @@
-// File: src/main.tsx
-import React from "react";
-import ReactDOM from "react-dom/client";
+import React, { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
-import "./App.css";
+import { AuthProvider } from "./pages/context/AuthContext";
 
-const rootEl = document.getElementById("root");
-if (!rootEl) {
-  // Prevent silent failure if root is missing
-  throw new Error(
-    "Root element #root not found. Ensure it exists in index.html."
-  );
-}
+const el = document.getElementById("root");
+if (!el) throw new Error("#root not found");
 
-ReactDOM.createRoot(rootEl).render(
-  <React.StrictMode>
+createRoot(el).render(
+  <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </StrictMode>
 );

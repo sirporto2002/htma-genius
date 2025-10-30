@@ -1,94 +1,134 @@
-mutation CreateSeedData @auth(level: USER) @transaction {
-  user_insertMany(data: [
-    {
-      id: "6879e96d-451f-496c-a81d-f55e39a13c7c",
-      displayName: "demoUser1",
-      createdAt: "2024-04-02T12:00:00Z"
-    },
-    {
-      id: "51a98237-3488-4e2b-b455-f3e949ef09e7",
-      displayName: "demoUser2",
-      createdAt: "2024-04-02T13:00:00Z"
+"""
+Seed data for HTMA Genius
+This file inserts initial data into your PostgreSQL database
+via Firebase Data Connect.
+"""
+
+# Insert a sample user
+mutation SeedUser {
+  insert_User_one(
+    object: {
+      name: "Kwabena Ansah"
+      email: "kwabena.ansah@example.com"
+      phone: "+233501234567"
+      role: "client"
     }
-  ])
-  movie_insertMany(data: [
-    {
-      id: "a1b2c3d4-e5f6-4789-a012-34567890abcd",
-      title: "Inception",
-      year: 2010,
-      createdAt: "2024-04-02T14:00:00Z"
-    },
-    {
-      id: "98765432-10fe-dcba-9999-888877776666",
-      title: "The Matrix",
-      year: 1999,
-      createdAt: "2024-04-02T15:00:00Z"
+  ) {
+    id
+    name
+    email
+  }
+}
+
+# Insert a sample HTMA report linked to that user
+mutation SeedReport {
+  insert_HTMAReport_one(
+    object: {
+      userId: 1
+      reportName: "HTMA Report - October 2025"
+      status: "analyzed"
+      notes: "Initial hair mineral analysis completed."
     }
-  ])
-  list_insertMany(data: [
-    {
-      id: "11223344-5566-7788-9900-aabbccddeeff",
-      name: "My Favorite Movies",
-      public: true,
-      createdAt: "2024-04-02T16:00:00Z",
-      updatedAt: "2024-04-02T16:00:00Z",
-      userId: "6879e96d-451f-496c-a81d-f55e39a13c7c"
-    },
-    {
-      id: "fedcba98-0099-8877-6655-4433221100ff",
-      name: "Sci-Fi Classics",
-      public: false,
-      createdAt: "2024-04-02T17:00:00Z",
-      updatedAt: "2024-04-02T17:00:00Z",
-      userId: "51a98237-3488-4e2b-b455-f3e949ef09e7"
+  ) {
+    id
+    reportName
+    status
+  }
+}
+
+# Insert mineral readings for that report
+mutation SeedMineralResults {
+  insert_MineralResult(
+    objects: [
+      {
+        reportId: 1
+        mineralName: "Calcium"
+        value: 38.5
+        referenceRangeLow: 30.0
+        referenceRangeHigh: 100.0
+        interpretation: "Optimal"
+      }
+      {
+        reportId: 1
+        mineralName: "Magnesium"
+        value: 4.8
+        referenceRangeLow: 3.0
+        referenceRangeHigh: 10.0
+        interpretation: "Slightly Low"
+      }
+      {
+        reportId: 1
+        mineralName: "Copper"
+        value: 1.5
+        referenceRangeLow: 1.0
+        referenceRangeHigh: 3.0
+        interpretation: "Normal"
+      }
+    ]
+  ) {
+    returning {
+      id
+      mineralName
+      value
     }
-  ])
-  listMovie_insertMany(data: [
-    {
-      listId: "11223344-5566-7788-9900-aabbccddeeff",
-      movieId: "a1b2c3d4-e5f6-4789-a012-34567890abcd",
-      position: 1
-    },
-    {
-      listId: "fedcba98-0099-8877-6655-4433221100ff",
-      movieId: "98765432-10fe-dcba-9999-888877776666",
-      position: 1
+  }
+}
+
+# Insert a few ratios
+mutation SeedRatios {
+  insert_MineralRatio(
+    objects: [
+      {
+        reportId: 1
+        ratioName: "Ca/Mg"
+        value: 8.0
+        ideal: 7.0
+        deviation: 1.0
+        status: "Slightly High"
+      }
+      {
+        reportId: 1
+        ratioName: "Na/K"
+        value: 2.5
+        ideal: 2.4
+        deviation: 0.1
+        status: "Optimal"
+      }
+    ]
+  ) {
+    returning {
+      id
+      ratioName
+      value
+      status
     }
-  ])
-  watch_insertMany(data: [
-    {
-      id: "e0d1c2b3-a4f5-4687-9909-2bacdef87a65",
-      movieId: "a1b2c3d4-e5f6-4789-a012-34567890abcd",
-      userId: "6879e96d-451f-496c-a81d-f55e39a13c7c",
-      watchDate: "2024-04-01",
-      createdAt: "2024-04-02T18:00:00Z"
-    },
-    {
-      id: "5f4e3d2c-b1a2-4356-89ab-cdef01234567",
-      movieId: "98765432-10fe-dcba-9999-888877776666",
-      userId: "51a98237-3488-4e2b-b455-f3e949ef09e7",
-      watchDate: "2024-04-01",
-      createdAt: "2024-04-02T19:00:00Z"
+  }
+}
+
+# Insert practitioner recommendations
+mutation SeedRecommendations {
+  insert_Recommendation(
+    objects: [
+      {
+        reportId: 1
+        title: "Increase Magnesium Intake"
+        description: "Consume more magnesium-rich foods like leafy greens, nuts, and seeds."
+        category: "Diet"
+        priority: "high"
+      }
+      {
+        reportId: 1
+        title: "Improve Calcium Balance"
+        description: "Consider reducing dairy and balancing with magnesium supplementation."
+        category: "Supplements"
+        priority: "normal"
+      }
+    ]
+  ) {
+    returning {
+      id
+      title
+      category
     }
-  ])
-  review_insertMany(data: [
-    {
-      id: "1a2b3c4d-5e6f-47a8-9012-34567890abcd",
-      movieId: "a1b2c3d4-e5f6-4789-a012-34567890abcd",
-      userId: "6879e96d-451f-496c-a81d-f55e39a13c7c",
-      watchId: "e0d1c2b3-a4f5-4687-9909-2bacdef87a65",
-      rating: 5,
-      createdAt: "2024-04-02T20:00:00Z",
-      updatedAt: "2024-04-02T20:00:00Z"
-    },
-    {
-      id: "9a8b7c6d-5e4f-4321-9876-fedcba098765",
-      movieId: "98765432-10fe-dcba-9999-888877776666",
-      userId: "51a98237-3488-4e2b-b455-f3e949ef09e7",
-      watchId: "5f4e3d2c-b1a2-4356-89ab-cdef01234567",
-      rating: 4,
-      createdAt: "2024-04-02T21:00:00Z",
-      updatedAt: "2024-04-02T21:00:00Z"
-    }
-  ])
+  }
 }

@@ -10,74 +10,82 @@ export type DateString = string;
 
 
 
-export interface AddMovieToListData {
-  listMovie_insert: ListMovie_Key;
+export interface ClientProfile_Key {
+  id: UUIDString;
+  __typename?: 'ClientProfile_Key';
 }
 
-export interface AddMovieToListVariables {
-  listId: UUIDString;
-  movieId: UUIDString;
-  note?: string | null;
-  position: number;
+export interface CreateClientProfileData {
+  clientProfile_insert: ClientProfile_Key;
 }
 
-export interface CreateNewUserData {
-  user_insert: User_Key;
+export interface CreateClientProfileVariables {
+  userId: UUIDString;
+  name: string;
+  createdAt: TimestampString;
+  dateOfBirth?: DateString | null;
+  gender?: string | null;
 }
 
-export interface CreateNewUserVariables {
-  displayName: string;
-  email?: string | null;
-  photoUrl?: string | null;
-}
-
-export interface GetMoviesFromListData {
-  list?: {
-    name: string;
-    movies_via_ListMovie: ({
-      id: UUIDString;
-      title: string;
-      year: number;
-      summary?: string | null;
-    } & Movie_Key)[];
-  };
-}
-
-export interface GetMoviesFromListVariables {
-  listId: UUIDString;
-}
-
-export interface GetPublicListsData {
-  lists: ({
+export interface GetHtmaReportData {
+  hTMAReport?: {
     id: UUIDString;
-    name: string;
-    description?: string | null;
-    user: {
+    clientProfile: {
       id: UUIDString;
-      displayName: string;
-    } & User_Key;
-  } & List_Key)[];
+      name: string;
+    } & ClientProfile_Key;
+      createdAt: TimestampString;
+      notes?: string | null;
+      testDate: DateString;
+      mineralRatios_on_htmaReport: ({
+        id: UUIDString;
+        ratioName: string;
+        value: number;
+      } & MineralRatio_Key)[];
+        mineralReadings_on_htmaReport: ({
+          id: UUIDString;
+          mineralName: string;
+          level: number;
+          unit?: string | null;
+        } & MineralReading_Key)[];
+  } & HTMAReport_Key;
 }
 
-export interface ListMovie_Key {
-  listId: UUIDString;
-  movieId: UUIDString;
-  __typename?: 'ListMovie_Key';
-}
-
-export interface List_Key {
+export interface GetHtmaReportVariables {
   id: UUIDString;
-  __typename?: 'List_Key';
 }
 
-export interface Movie_Key {
+export interface HTMAReport_Key {
   id: UUIDString;
-  __typename?: 'Movie_Key';
+  __typename?: 'HTMAReport_Key';
 }
 
-export interface Review_Key {
+export interface ListUsersData {
+  users: ({
+    id: UUIDString;
+    displayName: string;
+    email: string;
+    photoUrl?: string | null;
+  } & User_Key)[];
+}
+
+export interface MineralRatio_Key {
   id: UUIDString;
-  __typename?: 'Review_Key';
+  __typename?: 'MineralRatio_Key';
+}
+
+export interface MineralReading_Key {
+  id: UUIDString;
+  __typename?: 'MineralReading_Key';
+}
+
+export interface UpdateMineralReadingData {
+  mineralReading_update?: MineralReading_Key | null;
+}
+
+export interface UpdateMineralReadingVariables {
+  id: UUIDString;
+  level?: number | null;
 }
 
 export interface User_Key {
@@ -85,56 +93,51 @@ export interface User_Key {
   __typename?: 'User_Key';
 }
 
-export interface Watch_Key {
-  id: UUIDString;
-  __typename?: 'Watch_Key';
-}
-
-interface CreateNewUserRef {
+interface CreateClientProfileRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: CreateNewUserVariables): MutationRef<CreateNewUserData, CreateNewUserVariables>;
+  (vars: CreateClientProfileVariables): MutationRef<CreateClientProfileData, CreateClientProfileVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: CreateNewUserVariables): MutationRef<CreateNewUserData, CreateNewUserVariables>;
+  (dc: DataConnect, vars: CreateClientProfileVariables): MutationRef<CreateClientProfileData, CreateClientProfileVariables>;
   operationName: string;
 }
-export const createNewUserRef: CreateNewUserRef;
+export const createClientProfileRef: CreateClientProfileRef;
 
-export function createNewUser(vars: CreateNewUserVariables): MutationPromise<CreateNewUserData, CreateNewUserVariables>;
-export function createNewUser(dc: DataConnect, vars: CreateNewUserVariables): MutationPromise<CreateNewUserData, CreateNewUserVariables>;
+export function createClientProfile(vars: CreateClientProfileVariables): MutationPromise<CreateClientProfileData, CreateClientProfileVariables>;
+export function createClientProfile(dc: DataConnect, vars: CreateClientProfileVariables): MutationPromise<CreateClientProfileData, CreateClientProfileVariables>;
 
-interface GetPublicListsRef {
+interface GetHtmaReportRef {
   /* Allow users to create refs without passing in DataConnect */
-  (): QueryRef<GetPublicListsData, undefined>;
+  (vars: GetHtmaReportVariables): QueryRef<GetHtmaReportData, GetHtmaReportVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect): QueryRef<GetPublicListsData, undefined>;
+  (dc: DataConnect, vars: GetHtmaReportVariables): QueryRef<GetHtmaReportData, GetHtmaReportVariables>;
   operationName: string;
 }
-export const getPublicListsRef: GetPublicListsRef;
+export const getHtmaReportRef: GetHtmaReportRef;
 
-export function getPublicLists(): QueryPromise<GetPublicListsData, undefined>;
-export function getPublicLists(dc: DataConnect): QueryPromise<GetPublicListsData, undefined>;
+export function getHtmaReport(vars: GetHtmaReportVariables): QueryPromise<GetHtmaReportData, GetHtmaReportVariables>;
+export function getHtmaReport(dc: DataConnect, vars: GetHtmaReportVariables): QueryPromise<GetHtmaReportData, GetHtmaReportVariables>;
 
-interface AddMovieToListRef {
+interface UpdateMineralReadingRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: AddMovieToListVariables): MutationRef<AddMovieToListData, AddMovieToListVariables>;
+  (vars: UpdateMineralReadingVariables): MutationRef<UpdateMineralReadingData, UpdateMineralReadingVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: AddMovieToListVariables): MutationRef<AddMovieToListData, AddMovieToListVariables>;
+  (dc: DataConnect, vars: UpdateMineralReadingVariables): MutationRef<UpdateMineralReadingData, UpdateMineralReadingVariables>;
   operationName: string;
 }
-export const addMovieToListRef: AddMovieToListRef;
+export const updateMineralReadingRef: UpdateMineralReadingRef;
 
-export function addMovieToList(vars: AddMovieToListVariables): MutationPromise<AddMovieToListData, AddMovieToListVariables>;
-export function addMovieToList(dc: DataConnect, vars: AddMovieToListVariables): MutationPromise<AddMovieToListData, AddMovieToListVariables>;
+export function updateMineralReading(vars: UpdateMineralReadingVariables): MutationPromise<UpdateMineralReadingData, UpdateMineralReadingVariables>;
+export function updateMineralReading(dc: DataConnect, vars: UpdateMineralReadingVariables): MutationPromise<UpdateMineralReadingData, UpdateMineralReadingVariables>;
 
-interface GetMoviesFromListRef {
+interface ListUsersRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetMoviesFromListVariables): QueryRef<GetMoviesFromListData, GetMoviesFromListVariables>;
+  (): QueryRef<ListUsersData, undefined>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: GetMoviesFromListVariables): QueryRef<GetMoviesFromListData, GetMoviesFromListVariables>;
+  (dc: DataConnect): QueryRef<ListUsersData, undefined>;
   operationName: string;
 }
-export const getMoviesFromListRef: GetMoviesFromListRef;
+export const listUsersRef: ListUsersRef;
 
-export function getMoviesFromList(vars: GetMoviesFromListVariables): QueryPromise<GetMoviesFromListData, GetMoviesFromListVariables>;
-export function getMoviesFromList(dc: DataConnect, vars: GetMoviesFromListVariables): QueryPromise<GetMoviesFromListData, GetMoviesFromListVariables>;
+export function listUsers(): QueryPromise<ListUsersData, undefined>;
+export function listUsers(dc: DataConnect): QueryPromise<ListUsersData, undefined>;
 

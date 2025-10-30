@@ -17,11 +17,11 @@ You can also follow the instructions from the [Data Connect documentation](https
 - [**Accessing the connector**](#accessing-the-connector)
   - [*Connecting to the local Emulator*](#connecting-to-the-local-emulator)
 - [**Queries**](#queries)
-  - [*GetPublicLists*](#getpubliclists)
-  - [*GetMoviesFromList*](#getmoviesfromlist)
+  - [*GetHTMAReport*](#gethtmareport)
+  - [*ListUsers*](#listusers)
 - [**Mutations**](#mutations)
-  - [*CreateNewUser*](#createnewuser)
-  - [*AddMovieToList*](#addmovietolist)
+  - [*CreateClientProfile*](#createclientprofile)
+  - [*UpdateMineralReading*](#updatemineralreading)
 
 # TanStack Query Firebase & TanStack React Query
 This SDK provides [React](https://react.dev/) hooks generated specific to your application, for the operations found in the connector `example`. These hooks are generated using [TanStack Query Firebase](https://react-query-firebase.invertase.dev/) by our partners at Invertase, a library built on top of [TanStack React Query v5](https://tanstack.com/query/v5/docs/framework/react/overview).
@@ -113,65 +113,90 @@ Here's a general overview of how to use the generated Query hooks in your code:
 
 Below are examples of how to use the `example` connector's generated Query hook functions to execute each Query. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#operations-react-angular).
 
-## GetPublicLists
-You can execute the `GetPublicLists` Query using the following Query hook function, which is defined in [dataconnect-generated/react/index.d.ts](./index.d.ts):
+## GetHTMAReport
+You can execute the `GetHTMAReport` Query using the following Query hook function, which is defined in [dataconnect-generated/react/index.d.ts](./index.d.ts):
 
 ```javascript
-useGetPublicLists(dc: DataConnect, options?: useDataConnectQueryOptions<GetPublicListsData>): UseDataConnectQueryResult<GetPublicListsData, undefined>;
+useGetHtmaReport(dc: DataConnect, vars: GetHtmaReportVariables, options?: useDataConnectQueryOptions<GetHtmaReportData>): UseDataConnectQueryResult<GetHtmaReportData, GetHtmaReportVariables>;
 ```
 You can also pass in a `DataConnect` instance to the Query hook function.
 ```javascript
-useGetPublicLists(options?: useDataConnectQueryOptions<GetPublicListsData>): UseDataConnectQueryResult<GetPublicListsData, undefined>;
+useGetHtmaReport(vars: GetHtmaReportVariables, options?: useDataConnectQueryOptions<GetHtmaReportData>): UseDataConnectQueryResult<GetHtmaReportData, GetHtmaReportVariables>;
 ```
 
 ### Variables
-The `GetPublicLists` Query has no variables.
+The `GetHTMAReport` Query requires an argument of type `GetHtmaReportVariables`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
+
+```javascript
+export interface GetHtmaReportVariables {
+  id: UUIDString;
+}
+```
 ### Return Type
-Recall that calling the `GetPublicLists` Query hook function returns a `UseQueryResult` object. This object holds the state of your Query, including whether the Query is loading, has completed, or has succeeded/failed, and any data returned by the Query, among other things.
+Recall that calling the `GetHTMAReport` Query hook function returns a `UseQueryResult` object. This object holds the state of your Query, including whether the Query is loading, has completed, or has succeeded/failed, and any data returned by the Query, among other things.
 
 To check the status of a Query, use the `UseQueryResult.status` field. You can also check for pending / success / error status using the `UseQueryResult.isPending`, `UseQueryResult.isSuccess`, and `UseQueryResult.isError` fields.
 
-To access the data returned by a Query, use the `UseQueryResult.data` field. The data for the `GetPublicLists` Query is of type `GetPublicListsData`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
+To access the data returned by a Query, use the `UseQueryResult.data` field. The data for the `GetHTMAReport` Query is of type `GetHtmaReportData`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
 ```javascript
-export interface GetPublicListsData {
-  lists: ({
+export interface GetHtmaReportData {
+  hTMAReport?: {
     id: UUIDString;
-    name: string;
-    description?: string | null;
-    user: {
+    clientProfile: {
       id: UUIDString;
-      displayName: string;
-    } & User_Key;
-  } & List_Key)[];
+      name: string;
+    } & ClientProfile_Key;
+      createdAt: TimestampString;
+      notes?: string | null;
+      testDate: DateString;
+      mineralRatios_on_htmaReport: ({
+        id: UUIDString;
+        ratioName: string;
+        value: number;
+      } & MineralRatio_Key)[];
+        mineralReadings_on_htmaReport: ({
+          id: UUIDString;
+          mineralName: string;
+          level: number;
+          unit?: string | null;
+        } & MineralReading_Key)[];
+  } & HTMAReport_Key;
 }
 ```
 
 To learn more about the `UseQueryResult` object, see the [TanStack React Query documentation](https://tanstack.com/query/v5/docs/framework/react/reference/useQuery).
 
-### Using `GetPublicLists`'s Query hook function
+### Using `GetHTMAReport`'s Query hook function
 
 ```javascript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig } from '@dataconnect/generated';
-import { useGetPublicLists } from '@dataconnect/generated/react'
+import { connectorConfig, GetHtmaReportVariables } from '@dataconnect/generated';
+import { useGetHtmaReport } from '@dataconnect/generated/react'
 
-export default function GetPublicListsComponent() {
+export default function GetHtmaReportComponent() {
+  // The `useGetHtmaReport` Query hook requires an argument of type `GetHtmaReportVariables`:
+  const getHtmaReportVars: GetHtmaReportVariables = {
+    id: ..., 
+  };
+
   // You don't have to do anything to "execute" the Query.
   // Call the Query hook function to get a `UseQueryResult` object which holds the state of your Query.
-  const query = useGetPublicLists();
+  const query = useGetHtmaReport(getHtmaReportVars);
+  // Variables can be defined inline as well.
+  const query = useGetHtmaReport({ id: ..., });
 
   // You can also pass in a `DataConnect` instance to the Query hook function.
   const dataConnect = getDataConnect(connectorConfig);
-  const query = useGetPublicLists(dataConnect);
+  const query = useGetHtmaReport(dataConnect, getHtmaReportVars);
 
   // You can also pass in a `useDataConnectQueryOptions` object to the Query hook function.
   const options = { staleTime: 5 * 1000 };
-  const query = useGetPublicLists(options);
+  const query = useGetHtmaReport(getHtmaReportVars, options);
 
   // You can also pass both a `DataConnect` instance and a `useDataConnectQueryOptions` object.
   const dataConnect = getDataConnect(connectorConfig);
   const options = { staleTime: 5 * 1000 };
-  const query = useGetPublicLists(dataConnect, options);
+  const query = useGetHtmaReport(dataConnect, getHtmaReportVars, options);
 
   // Then, you can render your component dynamically based on the status of the Query.
   if (query.isPending) {
@@ -184,84 +209,68 @@ export default function GetPublicListsComponent() {
 
   // If the Query is successful, you can access the data returned using the `UseQueryResult.data` field.
   if (query.isSuccess) {
-    console.log(query.data.lists);
+    console.log(query.data.hTMAReport);
   }
   return <div>Query execution {query.isSuccess ? 'successful' : 'failed'}!</div>;
 }
 ```
 
-## GetMoviesFromList
-You can execute the `GetMoviesFromList` Query using the following Query hook function, which is defined in [dataconnect-generated/react/index.d.ts](./index.d.ts):
+## ListUsers
+You can execute the `ListUsers` Query using the following Query hook function, which is defined in [dataconnect-generated/react/index.d.ts](./index.d.ts):
 
 ```javascript
-useGetMoviesFromList(dc: DataConnect, vars: GetMoviesFromListVariables, options?: useDataConnectQueryOptions<GetMoviesFromListData>): UseDataConnectQueryResult<GetMoviesFromListData, GetMoviesFromListVariables>;
+useListUsers(dc: DataConnect, options?: useDataConnectQueryOptions<ListUsersData>): UseDataConnectQueryResult<ListUsersData, undefined>;
 ```
 You can also pass in a `DataConnect` instance to the Query hook function.
 ```javascript
-useGetMoviesFromList(vars: GetMoviesFromListVariables, options?: useDataConnectQueryOptions<GetMoviesFromListData>): UseDataConnectQueryResult<GetMoviesFromListData, GetMoviesFromListVariables>;
+useListUsers(options?: useDataConnectQueryOptions<ListUsersData>): UseDataConnectQueryResult<ListUsersData, undefined>;
 ```
 
 ### Variables
-The `GetMoviesFromList` Query requires an argument of type `GetMoviesFromListVariables`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
-
-```javascript
-export interface GetMoviesFromListVariables {
-  listId: UUIDString;
-}
-```
+The `ListUsers` Query has no variables.
 ### Return Type
-Recall that calling the `GetMoviesFromList` Query hook function returns a `UseQueryResult` object. This object holds the state of your Query, including whether the Query is loading, has completed, or has succeeded/failed, and any data returned by the Query, among other things.
+Recall that calling the `ListUsers` Query hook function returns a `UseQueryResult` object. This object holds the state of your Query, including whether the Query is loading, has completed, or has succeeded/failed, and any data returned by the Query, among other things.
 
 To check the status of a Query, use the `UseQueryResult.status` field. You can also check for pending / success / error status using the `UseQueryResult.isPending`, `UseQueryResult.isSuccess`, and `UseQueryResult.isError` fields.
 
-To access the data returned by a Query, use the `UseQueryResult.data` field. The data for the `GetMoviesFromList` Query is of type `GetMoviesFromListData`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
+To access the data returned by a Query, use the `UseQueryResult.data` field. The data for the `ListUsers` Query is of type `ListUsersData`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
 ```javascript
-export interface GetMoviesFromListData {
-  list?: {
-    name: string;
-    movies_via_ListMovie: ({
-      id: UUIDString;
-      title: string;
-      year: number;
-      summary?: string | null;
-    } & Movie_Key)[];
-  };
+export interface ListUsersData {
+  users: ({
+    id: UUIDString;
+    displayName: string;
+    email: string;
+    photoUrl?: string | null;
+  } & User_Key)[];
 }
 ```
 
 To learn more about the `UseQueryResult` object, see the [TanStack React Query documentation](https://tanstack.com/query/v5/docs/framework/react/reference/useQuery).
 
-### Using `GetMoviesFromList`'s Query hook function
+### Using `ListUsers`'s Query hook function
 
 ```javascript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, GetMoviesFromListVariables } from '@dataconnect/generated';
-import { useGetMoviesFromList } from '@dataconnect/generated/react'
+import { connectorConfig } from '@dataconnect/generated';
+import { useListUsers } from '@dataconnect/generated/react'
 
-export default function GetMoviesFromListComponent() {
-  // The `useGetMoviesFromList` Query hook requires an argument of type `GetMoviesFromListVariables`:
-  const getMoviesFromListVars: GetMoviesFromListVariables = {
-    listId: ..., 
-  };
-
+export default function ListUsersComponent() {
   // You don't have to do anything to "execute" the Query.
   // Call the Query hook function to get a `UseQueryResult` object which holds the state of your Query.
-  const query = useGetMoviesFromList(getMoviesFromListVars);
-  // Variables can be defined inline as well.
-  const query = useGetMoviesFromList({ listId: ..., });
+  const query = useListUsers();
 
   // You can also pass in a `DataConnect` instance to the Query hook function.
   const dataConnect = getDataConnect(connectorConfig);
-  const query = useGetMoviesFromList(dataConnect, getMoviesFromListVars);
+  const query = useListUsers(dataConnect);
 
   // You can also pass in a `useDataConnectQueryOptions` object to the Query hook function.
   const options = { staleTime: 5 * 1000 };
-  const query = useGetMoviesFromList(getMoviesFromListVars, options);
+  const query = useListUsers(options);
 
   // You can also pass both a `DataConnect` instance and a `useDataConnectQueryOptions` object.
   const dataConnect = getDataConnect(connectorConfig);
   const options = { staleTime: 5 * 1000 };
-  const query = useGetMoviesFromList(dataConnect, getMoviesFromListVars, options);
+  const query = useListUsers(dataConnect, options);
 
   // Then, you can render your component dynamically based on the status of the Query.
   if (query.isPending) {
@@ -274,7 +283,7 @@ export default function GetMoviesFromListComponent() {
 
   // If the Query is successful, you can access the data returned using the `UseQueryResult.data` field.
   if (query.isSuccess) {
-    console.log(query.data.list);
+    console.log(query.data.users);
   }
   return <div>Query execution {query.isSuccess ? 'successful' : 'failed'}!</div>;
 }
@@ -305,86 +314,90 @@ Here's a general overview of how to use the generated Mutation hooks in your cod
 
 Below are examples of how to use the `example` connector's generated Mutation hook functions to execute each Mutation. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#operations-react-angular).
 
-## CreateNewUser
-You can execute the `CreateNewUser` Mutation using the `UseMutationResult` object returned by the following Mutation hook function (which is defined in [dataconnect-generated/react/index.d.ts](./index.d.ts)):
+## CreateClientProfile
+You can execute the `CreateClientProfile` Mutation using the `UseMutationResult` object returned by the following Mutation hook function (which is defined in [dataconnect-generated/react/index.d.ts](./index.d.ts)):
 ```javascript
-useCreateNewUser(options?: useDataConnectMutationOptions<CreateNewUserData, FirebaseError, CreateNewUserVariables>): UseDataConnectMutationResult<CreateNewUserData, CreateNewUserVariables>;
+useCreateClientProfile(options?: useDataConnectMutationOptions<CreateClientProfileData, FirebaseError, CreateClientProfileVariables>): UseDataConnectMutationResult<CreateClientProfileData, CreateClientProfileVariables>;
 ```
 You can also pass in a `DataConnect` instance to the Mutation hook function.
 ```javascript
-useCreateNewUser(dc: DataConnect, options?: useDataConnectMutationOptions<CreateNewUserData, FirebaseError, CreateNewUserVariables>): UseDataConnectMutationResult<CreateNewUserData, CreateNewUserVariables>;
+useCreateClientProfile(dc: DataConnect, options?: useDataConnectMutationOptions<CreateClientProfileData, FirebaseError, CreateClientProfileVariables>): UseDataConnectMutationResult<CreateClientProfileData, CreateClientProfileVariables>;
 ```
 
 ### Variables
-The `CreateNewUser` Mutation requires an argument of type `CreateNewUserVariables`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
+The `CreateClientProfile` Mutation requires an argument of type `CreateClientProfileVariables`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
 
 ```javascript
-export interface CreateNewUserVariables {
-  displayName: string;
-  email?: string | null;
-  photoUrl?: string | null;
+export interface CreateClientProfileVariables {
+  userId: UUIDString;
+  name: string;
+  createdAt: TimestampString;
+  dateOfBirth?: DateString | null;
+  gender?: string | null;
 }
 ```
 ### Return Type
-Recall that calling the `CreateNewUser` Mutation hook function returns a `UseMutationResult` object. This object holds the state of your Mutation, including whether the Mutation is loading, has completed, or has succeeded/failed, among other things.
+Recall that calling the `CreateClientProfile` Mutation hook function returns a `UseMutationResult` object. This object holds the state of your Mutation, including whether the Mutation is loading, has completed, or has succeeded/failed, among other things.
 
 To check the status of a Mutation, use the `UseMutationResult.status` field. You can also check for pending / success / error status using the `UseMutationResult.isPending`, `UseMutationResult.isSuccess`, and `UseMutationResult.isError` fields.
 
 To execute the Mutation, call `UseMutationResult.mutate()`. This function executes the Mutation, but does not return the data from the Mutation.
 
-To access the data returned by a Mutation, use the `UseMutationResult.data` field. The data for the `CreateNewUser` Mutation is of type `CreateNewUserData`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
+To access the data returned by a Mutation, use the `UseMutationResult.data` field. The data for the `CreateClientProfile` Mutation is of type `CreateClientProfileData`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
 ```javascript
-export interface CreateNewUserData {
-  user_insert: User_Key;
+export interface CreateClientProfileData {
+  clientProfile_insert: ClientProfile_Key;
 }
 ```
 
 To learn more about the `UseMutationResult` object, see the [TanStack React Query documentation](https://tanstack.com/query/v5/docs/framework/react/reference/useMutation).
 
-### Using `CreateNewUser`'s Mutation hook function
+### Using `CreateClientProfile`'s Mutation hook function
 
 ```javascript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, CreateNewUserVariables } from '@dataconnect/generated';
-import { useCreateNewUser } from '@dataconnect/generated/react'
+import { connectorConfig, CreateClientProfileVariables } from '@dataconnect/generated';
+import { useCreateClientProfile } from '@dataconnect/generated/react'
 
-export default function CreateNewUserComponent() {
+export default function CreateClientProfileComponent() {
   // Call the Mutation hook function to get a `UseMutationResult` object which holds the state of your Mutation.
-  const mutation = useCreateNewUser();
+  const mutation = useCreateClientProfile();
 
   // You can also pass in a `DataConnect` instance to the Mutation hook function.
   const dataConnect = getDataConnect(connectorConfig);
-  const mutation = useCreateNewUser(dataConnect);
+  const mutation = useCreateClientProfile(dataConnect);
 
   // You can also pass in a `useDataConnectMutationOptions` object to the Mutation hook function.
   const options = {
     onSuccess: () => { console.log('Mutation succeeded!'); }
   };
-  const mutation = useCreateNewUser(options);
+  const mutation = useCreateClientProfile(options);
 
   // You can also pass both a `DataConnect` instance and a `useDataConnectMutationOptions` object.
   const dataConnect = getDataConnect(connectorConfig);
   const options = {
     onSuccess: () => { console.log('Mutation succeeded!'); }
   };
-  const mutation = useCreateNewUser(dataConnect, options);
+  const mutation = useCreateClientProfile(dataConnect, options);
 
   // After calling the Mutation hook function, you must call `UseMutationResult.mutate()` to execute the Mutation.
-  // The `useCreateNewUser` Mutation requires an argument of type `CreateNewUserVariables`:
-  const createNewUserVars: CreateNewUserVariables = {
-    displayName: ..., 
-    email: ..., // optional
-    photoUrl: ..., // optional
+  // The `useCreateClientProfile` Mutation requires an argument of type `CreateClientProfileVariables`:
+  const createClientProfileVars: CreateClientProfileVariables = {
+    userId: ..., 
+    name: ..., 
+    createdAt: ..., 
+    dateOfBirth: ..., // optional
+    gender: ..., // optional
   };
-  mutation.mutate(createNewUserVars);
+  mutation.mutate(createClientProfileVars);
   // Variables can be defined inline as well.
-  mutation.mutate({ displayName: ..., email: ..., photoUrl: ..., });
+  mutation.mutate({ userId: ..., name: ..., createdAt: ..., dateOfBirth: ..., gender: ..., });
 
   // You can also pass in a `useDataConnectMutationOptions` object to `UseMutationResult.mutate()`.
   const options = {
     onSuccess: () => { console.log('Mutation succeeded!'); }
   };
-  mutation.mutate(createNewUserVars, options);
+  mutation.mutate(createClientProfileVars, options);
 
   // Then, you can render your component dynamically based on the status of the Mutation.
   if (mutation.isPending) {
@@ -397,94 +410,90 @@ export default function CreateNewUserComponent() {
 
   // If the Mutation is successful, you can access the data returned using the `UseMutationResult.data` field.
   if (mutation.isSuccess) {
-    console.log(mutation.data.user_insert);
+    console.log(mutation.data.clientProfile_insert);
   }
   return <div>Mutation execution {mutation.isSuccess ? 'successful' : 'failed'}!</div>;
 }
 ```
 
-## AddMovieToList
-You can execute the `AddMovieToList` Mutation using the `UseMutationResult` object returned by the following Mutation hook function (which is defined in [dataconnect-generated/react/index.d.ts](./index.d.ts)):
+## UpdateMineralReading
+You can execute the `UpdateMineralReading` Mutation using the `UseMutationResult` object returned by the following Mutation hook function (which is defined in [dataconnect-generated/react/index.d.ts](./index.d.ts)):
 ```javascript
-useAddMovieToList(options?: useDataConnectMutationOptions<AddMovieToListData, FirebaseError, AddMovieToListVariables>): UseDataConnectMutationResult<AddMovieToListData, AddMovieToListVariables>;
+useUpdateMineralReading(options?: useDataConnectMutationOptions<UpdateMineralReadingData, FirebaseError, UpdateMineralReadingVariables>): UseDataConnectMutationResult<UpdateMineralReadingData, UpdateMineralReadingVariables>;
 ```
 You can also pass in a `DataConnect` instance to the Mutation hook function.
 ```javascript
-useAddMovieToList(dc: DataConnect, options?: useDataConnectMutationOptions<AddMovieToListData, FirebaseError, AddMovieToListVariables>): UseDataConnectMutationResult<AddMovieToListData, AddMovieToListVariables>;
+useUpdateMineralReading(dc: DataConnect, options?: useDataConnectMutationOptions<UpdateMineralReadingData, FirebaseError, UpdateMineralReadingVariables>): UseDataConnectMutationResult<UpdateMineralReadingData, UpdateMineralReadingVariables>;
 ```
 
 ### Variables
-The `AddMovieToList` Mutation requires an argument of type `AddMovieToListVariables`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
+The `UpdateMineralReading` Mutation requires an argument of type `UpdateMineralReadingVariables`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
 
 ```javascript
-export interface AddMovieToListVariables {
-  listId: UUIDString;
-  movieId: UUIDString;
-  note?: string | null;
-  position: number;
+export interface UpdateMineralReadingVariables {
+  id: UUIDString;
+  level?: number | null;
 }
 ```
 ### Return Type
-Recall that calling the `AddMovieToList` Mutation hook function returns a `UseMutationResult` object. This object holds the state of your Mutation, including whether the Mutation is loading, has completed, or has succeeded/failed, among other things.
+Recall that calling the `UpdateMineralReading` Mutation hook function returns a `UseMutationResult` object. This object holds the state of your Mutation, including whether the Mutation is loading, has completed, or has succeeded/failed, among other things.
 
 To check the status of a Mutation, use the `UseMutationResult.status` field. You can also check for pending / success / error status using the `UseMutationResult.isPending`, `UseMutationResult.isSuccess`, and `UseMutationResult.isError` fields.
 
 To execute the Mutation, call `UseMutationResult.mutate()`. This function executes the Mutation, but does not return the data from the Mutation.
 
-To access the data returned by a Mutation, use the `UseMutationResult.data` field. The data for the `AddMovieToList` Mutation is of type `AddMovieToListData`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
+To access the data returned by a Mutation, use the `UseMutationResult.data` field. The data for the `UpdateMineralReading` Mutation is of type `UpdateMineralReadingData`, which is defined in [dataconnect-generated/index.d.ts](../index.d.ts). It has the following fields:
 ```javascript
-export interface AddMovieToListData {
-  listMovie_insert: ListMovie_Key;
+export interface UpdateMineralReadingData {
+  mineralReading_update?: MineralReading_Key | null;
 }
 ```
 
 To learn more about the `UseMutationResult` object, see the [TanStack React Query documentation](https://tanstack.com/query/v5/docs/framework/react/reference/useMutation).
 
-### Using `AddMovieToList`'s Mutation hook function
+### Using `UpdateMineralReading`'s Mutation hook function
 
 ```javascript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, AddMovieToListVariables } from '@dataconnect/generated';
-import { useAddMovieToList } from '@dataconnect/generated/react'
+import { connectorConfig, UpdateMineralReadingVariables } from '@dataconnect/generated';
+import { useUpdateMineralReading } from '@dataconnect/generated/react'
 
-export default function AddMovieToListComponent() {
+export default function UpdateMineralReadingComponent() {
   // Call the Mutation hook function to get a `UseMutationResult` object which holds the state of your Mutation.
-  const mutation = useAddMovieToList();
+  const mutation = useUpdateMineralReading();
 
   // You can also pass in a `DataConnect` instance to the Mutation hook function.
   const dataConnect = getDataConnect(connectorConfig);
-  const mutation = useAddMovieToList(dataConnect);
+  const mutation = useUpdateMineralReading(dataConnect);
 
   // You can also pass in a `useDataConnectMutationOptions` object to the Mutation hook function.
   const options = {
     onSuccess: () => { console.log('Mutation succeeded!'); }
   };
-  const mutation = useAddMovieToList(options);
+  const mutation = useUpdateMineralReading(options);
 
   // You can also pass both a `DataConnect` instance and a `useDataConnectMutationOptions` object.
   const dataConnect = getDataConnect(connectorConfig);
   const options = {
     onSuccess: () => { console.log('Mutation succeeded!'); }
   };
-  const mutation = useAddMovieToList(dataConnect, options);
+  const mutation = useUpdateMineralReading(dataConnect, options);
 
   // After calling the Mutation hook function, you must call `UseMutationResult.mutate()` to execute the Mutation.
-  // The `useAddMovieToList` Mutation requires an argument of type `AddMovieToListVariables`:
-  const addMovieToListVars: AddMovieToListVariables = {
-    listId: ..., 
-    movieId: ..., 
-    note: ..., // optional
-    position: ..., 
+  // The `useUpdateMineralReading` Mutation requires an argument of type `UpdateMineralReadingVariables`:
+  const updateMineralReadingVars: UpdateMineralReadingVariables = {
+    id: ..., 
+    level: ..., // optional
   };
-  mutation.mutate(addMovieToListVars);
+  mutation.mutate(updateMineralReadingVars);
   // Variables can be defined inline as well.
-  mutation.mutate({ listId: ..., movieId: ..., note: ..., position: ..., });
+  mutation.mutate({ id: ..., level: ..., });
 
   // You can also pass in a `useDataConnectMutationOptions` object to `UseMutationResult.mutate()`.
   const options = {
     onSuccess: () => { console.log('Mutation succeeded!'); }
   };
-  mutation.mutate(addMovieToListVars, options);
+  mutation.mutate(updateMineralReadingVars, options);
 
   // Then, you can render your component dynamically based on the status of the Mutation.
   if (mutation.isPending) {
@@ -497,7 +506,7 @@ export default function AddMovieToListComponent() {
 
   // If the Mutation is successful, you can access the data returned using the `UseMutationResult.data` field.
   if (mutation.isSuccess) {
-    console.log(mutation.data.listMovie_insert);
+    console.log(mutation.data.mineralReading_update);
   }
   return <div>Mutation execution {mutation.isSuccess ? 'successful' : 'failed'}!</div>;
 }

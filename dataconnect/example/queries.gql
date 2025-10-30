@@ -1,31 +1,191 @@
-mutation CreateNewUser($displayName: String!, $email: String, $photoUrl: String) @auth(level: USER_ANON) {
-  user_insert(data: {displayName: $displayName, email: $email, photoUrl: $photoUrl, createdAt_expr: "request.time"})
-}
+"""
+HTMA Genius - Example GraphQL Queries & Mutations
+These can be used in Firebase Data Connect Explorer or your frontend app.
+"""
 
-query GetPublicLists @auth(level: PUBLIC) {
-  lists(where: {public: {eq: true}}) {
+# ===============================================
+# 🔍  QUERY: Get all users and their reports
+# ===============================================
+query GetAllUsersWithReports {
+  User {
     id
     name
-    description
-    user {
+    email
+    role
+    createdAt
+    reports {
       id
-      displayName
+      reportName
+      status
+      createdAt
+      minerals {
+        mineralName
+        value
+        interpretation
+      }
+      ratios {
+        ratioName
+        value
+        ideal
+        status
+      }
+      recommendations {
+        title
+        category
+        priority
+      }
     }
   }
 }
 
-mutation AddMovieToList($listId: UUID!, $movieId: UUID!, $note: String, $position: Int!) @auth(level: USER) {
-  listMovie_insert(data: {listId: $listId, movieId: $movieId, note: $note, position: $position})
+# ===============================================
+# 🔍  QUERY: Get a single user by email
+# ===============================================
+query GetUserByEmail {
+  User(where: { email: { _eq: "kwabena.ansah@example.com" } }) {
+    id
+    name
+    email
+    reports {
+      reportName
+      status
+    }
+  }
 }
 
-query GetMoviesFromList($listId: UUID!) @auth(level: USER) {
-  list(id: $listId) {
+# ===============================================
+# 🔍  QUERY: Get mineral analysis for a specific report
+# ===============================================
+query GetMineralsByReport {
+  HTMAReport_by_pk(id: 1) {
+    id
+    reportName
+    minerals {
+      mineralName
+      value
+      interpretation
+    }
+  }
+}
+
+# ===============================================
+# 📊  QUERY: Get average mineral values across reports
+# ===============================================
+query GetAverageMineralValues {
+  MineralResult_aggregate {
+    aggregate {
+      avg {
+        value
+      }
+    }
+  }
+}
+
+# ===============================================
+# ✏️  MUTATION: Add a new user
+# ===============================================
+mutation AddNewUser {
+  insert_User_one(
+    object: {
+      name: "New User Example"
+      email: "newuser@example.com"
+      phone: "+1234567890"
+      role: "client"
+    }
+  ) {
+    id
     name
-    movies_via_ListMovie {
+    email
+  }
+}
+
+# ===============================================
+# ✏️  MUTATION: Add a new HTMA report for a user
+# ===============================================
+mutation AddNewReport {
+  insert_HTMAReport_one(
+    object: {
+      userId: 1
+      reportName: "HTMA Report - Sample"
+      status: "pending"
+      notes: "Awaiting analysis"
+    }
+  ) {
+    id
+    reportName
+    status
+  }
+}
+
+# ===============================================
+# ✏️  MUTATION: Add mineral readings to a report
+# ===============================================
+mutation AddMineralsToReport {
+  insert_MineralResult(
+    objects: [
+      {
+        reportId: 1
+        mineralName: "Zinc"
+        value: 2.1
+        referenceRangeLow: 1.0
+        referenceRangeHigh: 3.0
+        interpretation: "Normal"
+      }
+      {
+        reportId: 1
+        mineralName: "Iron"
+        value: 4.3
+        referenceRangeLow: 2.0
+        referenceRangeHigh: 6.0
+        interpretation: "Optimal"
+      }
+    ]
+  ) {
+    returning {
       id
-      title
-      year
-      summary
+      mineralName
+      value
+      interpretation
+    }
+  }
+}
+
+# ===============================================
+# 🧠  MUTATION: Add a new recommendation
+# ===============================================
+mutation AddRecommendation {
+  insert_Recommendation_one(
+    object: {
+      reportId: 1
+      title: "Hydration Focus"
+      description: "Increase daily water intake to support electrolyte balance."
+      category: "Lifestyle"
+      priority: "normal"
+    }
+  ) {
+    id
+    title
+    category
+  }
+}
+
+# ===============================================
+# 🧾  DELETE: Remove a report (example cleanup)
+# ===============================================
+mutation DeleteReport {
+  delete_HTMAReport_by_pk(id: 1) {
+    id
+    reportName
+  }
+}
+
+# ===============================================
+# ✅  QUERY: Health check — get total user count
+# ===============================================
+query GetUserCount {
+  User_aggregate {
+    aggregate {
+      count
     }
   }
 }

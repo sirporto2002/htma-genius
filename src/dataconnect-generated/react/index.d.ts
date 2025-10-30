@@ -1,18 +1,18 @@
-import { CreateNewUserData, CreateNewUserVariables, GetPublicListsData, AddMovieToListData, AddMovieToListVariables, GetMoviesFromListData, GetMoviesFromListVariables } from '../';
+import { CreateClientProfileData, CreateClientProfileVariables, GetHtmaReportData, GetHtmaReportVariables, UpdateMineralReadingData, UpdateMineralReadingVariables, ListUsersData } from '../';
 import { UseDataConnectQueryResult, useDataConnectQueryOptions, UseDataConnectMutationResult, useDataConnectMutationOptions} from '@tanstack-query-firebase/react/data-connect';
 import { UseQueryResult, UseMutationResult} from '@tanstack/react-query';
 import { DataConnect } from 'firebase/data-connect';
 import { FirebaseError } from 'firebase/app';
 
 
-export function useCreateNewUser(options?: useDataConnectMutationOptions<CreateNewUserData, FirebaseError, CreateNewUserVariables>): UseDataConnectMutationResult<CreateNewUserData, CreateNewUserVariables>;
-export function useCreateNewUser(dc: DataConnect, options?: useDataConnectMutationOptions<CreateNewUserData, FirebaseError, CreateNewUserVariables>): UseDataConnectMutationResult<CreateNewUserData, CreateNewUserVariables>;
+export function useCreateClientProfile(options?: useDataConnectMutationOptions<CreateClientProfileData, FirebaseError, CreateClientProfileVariables>): UseDataConnectMutationResult<CreateClientProfileData, CreateClientProfileVariables>;
+export function useCreateClientProfile(dc: DataConnect, options?: useDataConnectMutationOptions<CreateClientProfileData, FirebaseError, CreateClientProfileVariables>): UseDataConnectMutationResult<CreateClientProfileData, CreateClientProfileVariables>;
 
-export function useGetPublicLists(options?: useDataConnectQueryOptions<GetPublicListsData>): UseDataConnectQueryResult<GetPublicListsData, undefined>;
-export function useGetPublicLists(dc: DataConnect, options?: useDataConnectQueryOptions<GetPublicListsData>): UseDataConnectQueryResult<GetPublicListsData, undefined>;
+export function useGetHtmaReport(vars: GetHtmaReportVariables, options?: useDataConnectQueryOptions<GetHtmaReportData>): UseDataConnectQueryResult<GetHtmaReportData, GetHtmaReportVariables>;
+export function useGetHtmaReport(dc: DataConnect, vars: GetHtmaReportVariables, options?: useDataConnectQueryOptions<GetHtmaReportData>): UseDataConnectQueryResult<GetHtmaReportData, GetHtmaReportVariables>;
 
-export function useAddMovieToList(options?: useDataConnectMutationOptions<AddMovieToListData, FirebaseError, AddMovieToListVariables>): UseDataConnectMutationResult<AddMovieToListData, AddMovieToListVariables>;
-export function useAddMovieToList(dc: DataConnect, options?: useDataConnectMutationOptions<AddMovieToListData, FirebaseError, AddMovieToListVariables>): UseDataConnectMutationResult<AddMovieToListData, AddMovieToListVariables>;
+export function useUpdateMineralReading(options?: useDataConnectMutationOptions<UpdateMineralReadingData, FirebaseError, UpdateMineralReadingVariables>): UseDataConnectMutationResult<UpdateMineralReadingData, UpdateMineralReadingVariables>;
+export function useUpdateMineralReading(dc: DataConnect, options?: useDataConnectMutationOptions<UpdateMineralReadingData, FirebaseError, UpdateMineralReadingVariables>): UseDataConnectMutationResult<UpdateMineralReadingData, UpdateMineralReadingVariables>;
 
-export function useGetMoviesFromList(vars: GetMoviesFromListVariables, options?: useDataConnectQueryOptions<GetMoviesFromListData>): UseDataConnectQueryResult<GetMoviesFromListData, GetMoviesFromListVariables>;
-export function useGetMoviesFromList(dc: DataConnect, vars: GetMoviesFromListVariables, options?: useDataConnectQueryOptions<GetMoviesFromListData>): UseDataConnectQueryResult<GetMoviesFromListData, GetMoviesFromListVariables>;
+export function useListUsers(options?: useDataConnectQueryOptions<ListUsersData>): UseDataConnectQueryResult<ListUsersData, undefined>;
+export function useListUsers(dc: DataConnect, options?: useDataConnectQueryOptions<ListUsersData>): UseDataConnectQueryResult<ListUsersData, undefined>;

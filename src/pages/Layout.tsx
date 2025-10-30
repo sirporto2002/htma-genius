@@ -1,58 +1,30 @@
-// File: src/pages/Layout.tsx
-import { useState } from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
+import type { ReactNode } from "react";
 
-export default function Layout() {
-  const [open, setOpen] = useState(false);
-
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <>
-      <header className="nav">
-        {/* ✅ Brand / Logo */}
-        <div className="nav__brand">
-          <span className="nav__logo">HTMA Genius</span>
-        </div>
-
-        {/* ✅ Desktop Links */}
-        <nav className="nav__links">
-          <NavLink to="/" end className="nav__link">
-            Home
-          </NavLink>
-          <NavLink to="/about" className="nav__link">
-            About
-          </NavLink>
-        </nav>
-
-        {/* ✅ Mobile Toggle */}
-        <button
-          className={`nav__toggle ${open ? "open" : ""}`}
-          aria-label="Toggle menu"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span className="bar" />
-          <span className="bar" />
-          <span className="bar" />
-        </button>
-      </header>
-
-      {/* ✅ Mobile Menu Panel */}
-      <nav
-        className={`nav__panel ${open ? "show" : ""}`}
-        onClick={() => setOpen(false)}
+    <div style={{ fontFamily: "system-ui, sans-serif" }}>
+      <header
+        style={{
+          padding: "12px 16px",
+          borderBottom: "1px solid #e5e7eb",
+          display: "flex",
+          gap: 16,
+        }}
       >
-        <NavLink to="/" end className="nav__link">
-          Home
-        </NavLink>
-        <NavLink to="/about" className="nav__link">
-          About
-        </NavLink>
-      </nav>
-
-      {/* ✅ Page Content */}
-      <main className="page">
-        <Outlet />
-      </main>
-    </>
+        <strong>HTMA Genius</strong>
+        <Link to="/">Home</Link>
+        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/login" style={{ marginLeft: "auto" }}>
+          Login
+        </Link>
+      </header>
+      <main style={{ padding: 16 }}>{children}</main>
+      <footer
+        style={{ padding: 12, borderTop: "1px solid #e5e7eb", marginTop: 24 }}
+      >
+        © {new Date().getFullYear()}
+      </footer>
+    </div>
   );
 }
